@@ -9,9 +9,10 @@
 [![Status](https://img.shields.io/badge/Status-Completed%20%26%20Tested-success?style=for-the-badge)](#)
 
 > **Tugas Akhir / Laporan Proyek Sistem Informasi**  
-> **Program Studi:** D-III Sistem Informasi, Fakultas Ilmu Komputer  
-> **Perguruan Tinggi:** Universitas Muhammadiyah Metro (2024)  
-> **Penyusun:** Afrizal Agung Nugraha (NPM: 21410014)  
+> **Program Studi:** S1 Ilmu Komputer, Fakultas Ilmu Komputer  
+> **Perguruan Tinggi:** Universitas Muhammadiyah Metro  
+> **Penyusun:** Handika Saputra (NPM: 24430011)  
+> **Tahun Akademik:** 2026 / 2027  
 > **Instansi Mitra:** PT. Eksavindo Mitra Mandiri (Kota Metro, Lampung)  
 
 ---
@@ -28,7 +29,7 @@
    - [6. Entity Relationship Diagram (ERD) Normalisasi 3NF](#6-entity-relationship-diagram-erd-normalisasi-3nf)
    - [7. Rancangan Relasi Antar Tabel](#7-rancangan-relasi-antar-tabel)
 4. [Tangkapan Layar Antarmuka Aplikasi (Screenshots)](#-tangkapan-layar-antarmuka-aplikasi-screenshots)
-   - [1. Halaman Beranda (Landing Page)](#1-halaman-beranda-landing-page)
+   - [1. Halaman Masuk / Login Pengguna](#1-halaman-masuk--login-pengguna)
    - [2. Katalog Layanan dengan AJAX Live Search](#2-katalog-layanan-dengan-ajax-live-search)
    - [3. Detail Layanan Instalasi](#3-detail-layanan-instalasi)
    - [4. Keranjang Belanja Pemesanan](#4-keranjang-belanja-pemesanan)
@@ -36,8 +37,8 @@
    - [6. Pembayaran GoPay QRIS Standar Nasional (Zero Manual Input)](#6-pembayaran-gopay-qris-standar-nasional-zero-manual-input)
    - [7. Kuitansi / Invoice Digital Resmi](#7-kuitansi--invoice-digital-resmi)
    - [8. Dashboard Administrator](#8-dashboard-administrator)
-   - [9. Panel Manajemen Pesanan & Penjadwalan Teknisi](#9-panel-manajemen-pesanan--penjadwalan-teknisi)
-   - [10. Panel Kelola Layanan / Paket Instalasi](#10-panel-kelola-layanan--paket-instalasi)
+   - [9. Panel Manajemen Pesanan & Penjadwalan Teknisi (Administrator)](#9-panel-manajemen-pesanan--penjadwalan-teknisi-administrator)
+   - [10. Panel Kelola Layanan & Produk Instalasi (Administrator)](#10-panel-kelola-layanan--produk-instalasi-administrator)
 5. [Spesifikasi Teknologi](#-spesifikasi-teknologi)
 6. [Struktur Direktori Proyek](#-struktur-direktori-proyek)
 7. [Panduan Instalasi & Menjalankan Proyek](#-panduan-instalasi--menjalankan-proyek)
@@ -83,6 +84,10 @@ Proyek ini menghadirkan **Sistem Informasi Pemesanan Instalasi Listrik Berbasis 
 ## 📐 Perancangan Sistem & Diagram
 
 ### 1. Flowchart Aliran Sistem Informasi (ASI) Swimlane (3 Jalur)
+
+<p align="center">
+  <img src="diagram-perancangan/1_flowchart_asi_swimlane.jpg" alt="Flowchart Aliran Sistem Informasi ASI Swimlane" width="850">
+</p>
 
 ```mermaid
 flowchart TD
@@ -132,6 +137,10 @@ flowchart TD
 
 ### 2. Activity Flowchart Siklus Pemesanan & Pembayaran QRIS End-to-End
 
+<p align="center">
+  <img src="diagram-perancangan/2_activity_flowchart_qris.jpg" alt="Activity Flowchart Siklus Pemesanan & Pembayaran QRIS End-to-End" width="850">
+</p>
+
 ```mermaid
 flowchart TD
     Start([Mulai Transaksi]) --> Login[Konsumen Login ke Sistem]
@@ -165,6 +174,10 @@ flowchart TD
 
 ### 3. Data Flow Diagram (DFD) Level 0 / Diagram Konteks
 
+<p align="center">
+  <img src="diagram-perancangan/3_dfd_level_0_konteks.jpg" alt="Data Flow Diagram DFD Level 0 Diagram Konteks" width="850">
+</p>
+
 ```mermaid
 flowchart LR
     KONSUMEN((KONSUMEN))
@@ -186,6 +199,10 @@ flowchart LR
 ---
 
 ### 4. Data Flow Diagram (DFD) Level 1 (13 Proses)
+
+<p align="center">
+  <img src="diagram-perancangan/4_dfd_level_1.jpg" alt="Data Flow Diagram DFD Level 1" width="850">
+</p>
 
 ```mermaid
 flowchart TD
@@ -240,6 +257,10 @@ flowchart TD
 
 ### 5. Use Case Diagram UML
 
+<p align="center">
+  <img src="diagram-perancangan/5_use_case_diagram.jpg" alt="Use Case Diagram UML" width="850">
+</p>
+
 ```mermaid
 flowchart LR
     subgraph Aktor
@@ -291,6 +312,10 @@ flowchart LR
 ---
 
 ### 6. Entity Relationship Diagram (ERD) Normalisasi 3NF
+
+<p align="center">
+  <img src="diagram-perancangan/6_erd_normalisasi_3nf.jpg" alt="Entity Relationship Diagram Normalisasi 3NF" width="850">
+</p>
 
 Rancangan database telah memenuhi standardisasi normalisasi **1NF, 2NF, hingga 3NF**:
 - **1NF:** Setiap atribut bersifat atomik, tanpa *repeating groups*. Item belanja pada transaksi dipisahkan ke tabel `detail_pesanan`.
@@ -433,6 +458,10 @@ erDiagram
 
 ### 7. Rancangan Relasi Antar Tabel
 
+<p align="center">
+  <img src="diagram-perancangan/7_rancangan_relasi_antar_tabel.jpg" alt="Rancangan Relasi Antar Tabel Database" width="850">
+</p>
+
 | Tabel | Primary Key (Eksplisit) | Foreign Key | Kardinalitas | Penjelasan Integritas Referensial |
 |---|---|---|---|---|
 | `role` | `id_role` | - | 1 : N | Mendefinisikan hak akses admin dan konsumen |
@@ -452,47 +481,105 @@ erDiagram
 
 ## 📸 Tangkapan Layar Antarmuka Aplikasi (Screenshots)
 
-Berikut adalah dokumentasi antarmuka sistem yang telah diimplementasikan:
+Berikut adalah dokumentasi tangkapan layar antarmuka sistem yang telah selesai diimplementasikan:
 
-### 1. Halaman Beranda (Landing Page)
-Menampilkan profil resmi PT. Eksavindo Mitra Mandiri, standar jaminan keamanan PUIL 2020 & kabel SNI, keunggulan teknisi bersertifikat, kategori instalasi populer, serta ringkasan paket terlaris.
-*(Akses: `index.php`)*
+### 1. Halaman Masuk / Login Pengguna
+Menampilkan form autentikasi kredensial pengguna yang aman dengan pemisahan hak akses antara Konsumen dan Administrator.
+*(Akses: `index.php?page=login`)*
+
+<p align="center">
+  <img src="screenshot/01_login_pengguna.png" alt="Halaman Login Pengguna" width="850">
+</p>
+
+---
 
 ### 2. Katalog Layanan dengan AJAX Live Search
-Menampilkan seluruh paket instalasi listrik dengan fitur pencarian instan (tanpa reload halaman). Hasil pencarian menyaring nama paket, kapasitas daya VA, dan kategori secara realtime.
+Menampilkan seluruh paket instalasi listrik dengan fitur pencarian instan (tanpa reload halaman). Hasil pencarian menyaring nama paket, kapasitas daya VA, dan kategori secara realtime dengan teknik *debounce*.
 *(Akses: `index.php?page=katalog`)*
 
+<p align="center">
+  <img src="screenshot/02_katalog_layanan_instalasi.jpg" alt="Katalog Layanan & Live Search AJAX" width="850">
+</p>
+
+---
+
 ### 3. Detail Layanan Instalasi
-Menampilkan rincian teknis lengkap (fase, rentang daya VA, spesifikasi MCB & kabel NYM/NYY Supreme, garansi 30 hari) serta input kuantitas pemesanan.
+Menampilkan rincian teknis lengkap (fase listrik, rentang daya VA, standar PUIL 2020 & SNI, garansi resmi 30 hari) serta input kuantitas pemesanan.
 *(Akses: `index.php?page=detail_produk&id=...`)*
 
+<p align="center">
+  <img src="screenshot/03_detail_paket_layanan.jpg" alt="Detail Paket Layanan Instalasi" width="850">
+</p>
+
+---
+
 ### 4. Keranjang Belanja Pemesanan
-Menampilkan kalkulasi otomatis subtotal item, potongan diskon promo, dan tombol navigasi menuju proses checkout.
+Menampilkan daftar item pesanan, kalkulasi otomatis subtotal item, potongan diskon promo aktif, rincian biaya pengiriman teknisi gratis area Metro, dan tombol navigasi menuju proses checkout.
 *(Akses: `index.php?page=keranjang`)*
 
+<p align="center">
+  <img src="screenshot/04_keranjang_pemesanan.png" alt="Keranjang Pemesanan Dinamis" width="850">
+</p>
+
+---
+
 ### 5. Form Checkout Multi-Alamat
-Form penentuan titik lokasi pengerjaan listrik dan pemilihan metode pembayaran (*Online Payment Gateway QRIS* vs *Transfer Bank Manual*).
+Fitur fleksibel penentuan titik lokasi pengerjaan instalasi listrik: pelanggan dapat memilih alamat tersimpan atau menambahkan alamat pemasangan baru dengan tipe bangunan (Rumah / Komersial / Industri), kode pos, kota, nomor WhatsApp, serta patokan khusus teknisi sebelum menyelesaikan pemesanan.
 *(Akses: `index.php?page=checkout`)*
 
+<p align="center">
+  <img src="screenshot/05_form_checkout_multi_alamat.png" alt="Form Checkout Multi-Alamat" width="850">
+</p>
+
+---
+
 ### 6. Pembayaran GoPay QRIS Standar Nasional (Zero Manual Input)
-Tampilan kartu standar nasional QRIS GPN terintegrasi Payment Gateway Midtrans. Nominal tagihan terkunci otomatis dari sistem, sehingga pelanggan tidak perlu menginput harga manual saat melakukan scan e-wallet.
+Tampilan kartu standar nasional QRIS GPN terintegrasi Payment Gateway Midtrans. Nominal tagihan terkunci otomatis dari sistem sesuai total tagihan pesanan (`ORD-20261117-8E4E7`), sehingga pelanggan cukup scan barcode tanpa perlu input harga manual di aplikasi e-wallet.
 *(Akses: `index.php?page=bayar_gateway&id=...`)*
 
+<p align="center">
+  <img src="screenshot/06_pembayaran_qris_midtrans.png" alt="Pembayaran GoPay QRIS Standar Nasional" width="850">
+</p>
+
+---
+
 ### 7. Kuitansi / Invoice Digital Resmi
-Dokumen tagihan dan bukti pembayaran sah lengkap dengan stempel status **LUNAS / VERIFIED**, rincian biaya, jadwal kunjungan, nama armada teknisi bertugas, dan tombol cetak langsung (*Print to PDF*).
+Dokumen tagihan dan bukti pembayaran sah lengkap dengan stempel status **LUNAS / VERIFIED**, nomor pesanan, rincian biaya, jadwal kunjungan, penugasan armada teknisi bersertifikat PT. Eksavindo, serta tombol cetak / simpan langsung (*Print to PDF*).
 *(Akses: `index.php?page=kuitansi&id=...`)*
 
+<p align="center">
+  <img src="screenshot/07_kuitansi_invoice_digital.png" alt="Kuitansi / Invoice Digital Resmi" width="850">
+</p>
+
+---
+
 ### 8. Dashboard Administrator
-Panel ringkasan operasional yang menyajikan kartu metrik total pesanan, jumlah verifikasi tertunda, pemasangan selesai, akumulasi omset keuangan, serta daftar pesanan terbaru.
+Panel ringkasan operasional yang menyajikan kartu metrik total pesanan, jumlah verifikasi tertunda, pemasangan selesai, akumulasi total omset terverifikasi (Rp 10.400.000), tautan cepat CRUD, serta tabel pemantauan pesanan masuk terbaru.
 *(Akses: `index.php?page=admin_dashboard`)*
 
-### 9. Panel Manajemen Pesanan & Penjadwalan Teknisi
-Tabel kontrol admin yang dilengkapi pencarian realtime AJAX, verifikasi status pembayaran, tombol otomatis *"Jadwalkan Besok"*, penugasan nama tim teknisi, dan pembaruan status dispatch lapangan.
-*(Akses: `index.php?page=admin_pesanan`)*
+<p align="center">
+  <img src="screenshot/08_dashboard_administrator.png" alt="Dashboard Administrator" width="850">
+</p>
 
-### 10. Panel Kelola Layanan / Paket Instalasi
-Form CRUD lengkap untuk menambah, mengubah, dan menghapus paket layanan, kapasitas daya VA, fase listrik, harga, serta kuota tim teknisi.
+---
+
+### 9. Panel Manajemen Pesanan & Penjadwalan Teknisi (Administrator)
+Tabel kontrol admin untuk pemrosesan detail pesanan: verifikasi status pembayaran, penugasan nama armada teknisi PT. Eksavindo, penentuan jadwal kunjungan instalasi, serta pembaruan progres pengerjaan di lokasi hingga status selesai.
+*(Akses: `index.php?page=admin_pesanan_detail&id=...`)*
+
+<p align="center">
+  <img src="screenshot/09_admin_proses_pesanan.jpg" alt="Panel Admin Kelola Status & Jadwal Teknisi" width="850">
+</p>
+
+---
+
+### 10. Panel Kelola Layanan & Produk Instalasi (Administrator)
+Form dan tabel kontrol CRUD master data paket instalasi kelistrikan: penambahan paket baru, pemfilteran realtime, pengaturan kategori, spesifikasi fase/daya VA, harga satuan paket, kuota tim, serta monitoring jumlah paket yang telah terjual.
 *(Akses: `index.php?page=admin_produk`)*
+
+<p align="center">
+  <img src="screenshot/10_admin_kelola_produk_layanan.png" alt="Panel Kelola Layanan & Produk Instalasi" width="850">
+</p>
 
 ---
 
@@ -565,6 +652,27 @@ c:\pemesanan-instalasi-listrik\
 │   │   ├── Services/MidtransService.php # Service Generator Snap Token & Webhook SHA512
 │   │   └── Http/Controllers/          # Controller Konsumen, Admin, Auth
 │   └── routes/web.php                 # Routing Laravel RESTful
+│
+├── screenshot/                        # Tangkapan Layar Antarmuka Sistem Web
+│   ├── 01_login_pengguna.png          # Antarmuka Login Pelanggan & Admin
+│   ├── 02_katalog_layanan_instalasi.jpg # Katalog Layanan & Live Search AJAX
+│   ├── 03_detail_paket_layanan.jpg    # Detail Spesifikasi Teknis PUIL 2020
+│   ├── 04_keranjang_pemesanan.png     # Keranjang Belanja Dinamis
+│   ├── 05_form_checkout_multi_alamat.png # Form Checkout Multi-Alamat
+│   ├── 06_pembayaran_qris_midtrans.png # Pembayaran GoPay QRIS Standar GPN Midtrans
+│   ├── 07_kuitansi_invoice_digital.png # Kuitansi / Invoice Digital Sah (Lunas/Verified)
+│   ├── 08_dashboard_administrator.png # Dashboard Monitoring Operasional Admin
+│   ├── 09_admin_proses_pesanan.jpg    # Pemrosesan Pesanan & Dispatch Teknisi
+│   └── 10_admin_kelola_produk_layanan.png # Master Data Paket Layanan & Produk Listrik
+│
+├── diagram-perancangan/               # Diagram Arsitektur & Perancangan Sistem (Format JPG)
+│   ├── 1_flowchart_asi_swimlane.jpg   # Flowchart Aliran Sistem Informasi (ASI)
+│   ├── 2_activity_flowchart_qris.jpg  # Activity Flowchart Pemesanan & QRIS
+│   ├── 3_dfd_level_0_konteks.jpg      # DFD Level 0 (Diagram Konteks)
+│   ├── 4_dfd_level_1.jpg              # DFD Level 1 (13 Proses)
+│   ├── 5_use_case_diagram.jpg         # Use Case Diagram UML
+│   ├── 6_erd_normalisasi_3nf.jpg      # ERD Normalisasi 3NF
+│   └── 7_rancangan_relasi_antar_tabel.jpg # Rancangan Relasi Antar Tabel
 │
 ├── assets/                            # Asset Gambar & Banner QRIS Nasional
 │   └── qris_midtrans_standar.png      # Template QR Code Standar Pembayaran Nasional GPN
