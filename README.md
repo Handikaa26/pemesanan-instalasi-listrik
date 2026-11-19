@@ -589,7 +589,7 @@ Form dan tabel kontrol CRUD master data paket instalasi kelistrikan: penambahan 
 |---|---|---|
 | **Bahasa Pemrograman** | PHP 8.2 / 8.4+ | Menggunakan arsitektur MVC bersih & siap migrasi ke Laravel |
 | **Framework / Core** | Native MVC & Laravel 11.x Ready | Struktur Model Eloquent, Controller, dan View Blade telah disiapkan |
-| **Database Management System** | MySQL 8.0+ / MariaDB | Menggunakan engine InnoDB, Foreign Key Constraints, Normalisasi 3NF |
+| **Database Management System** | MySQL 8.0+ / MariaDB & TiDB Cloud (Serverless) | Engine InnoDB / TiKV, Normalisasi 3NF, Mendukung Cloud-Native Distributed SQL |
 | **Frontend Styling** | Bootstrap 5.3.3 + Custom CSS | Tampilan modern, responsive pada layar smartphone maupun desktop |
 | **Icon Library** | Bootstrap Icons v1.11.3 | Representasi simbol grafis interaktif |
 | **Tipografi** | Google Fonts: Plus Jakarta Sans | Tampilan profesional berstandar antarmuka modern |
@@ -608,6 +608,8 @@ c:\pemesanan-instalasi-listrik\
 ├── JALANKAN_WEB.bat                   # Skrip Otomatisasi Start Server Port 8000
 ├── database.sql                       # DDL Skema Database Awal
 ├── schema_instalasi_listrik_gateway.sql # DDL Database 3NF + Payment Gateway
+├── tidb_migration.sql                 # Skrip Migrasi Lengkap Siap Eksekusi ke TiDB Cloud
+├── .env.example                       # Contoh Konfigurasi Environment (MySQL / TiDB)
 ├── README.md                          # Laporan Dokumentasi Proyek GitHub
 │
 ├── config/

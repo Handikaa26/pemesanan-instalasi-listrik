@@ -1,0 +1,5 @@
+.env
+cloudflared.exe
+*.log
+.DS_Store
+Thumbs.db
