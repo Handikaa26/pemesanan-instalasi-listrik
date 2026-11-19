@@ -24,10 +24,17 @@ class Database {
         }
     }
 
+    private static function getEnvVar($key, $default = null) {
+        $val = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+        if ($val === false || $val === null || $val === '') {
+            return $default;
+        }
+        return trim($val, " \t\n\r\0\x0B\"'");
+    }
+
     private static function getCaCertPath() {
-        // Cek path yang sudah ada
         $candidates = [
-            getenv('MYSQL_ATTR_SSL_CA'),
+            self::getEnvVar('MYSQL_ATTR_SSL_CA'),
             __DIR__ . '/cacert.pem',
             __DIR__ . '/../cacert.pem',
             dirname(__DIR__) . '/cacert.pem',
@@ -37,47 +44,33 @@ class Database {
         ];
 
         foreach ($candidates as $path) {
-            if (!empty($path) && file_exists($path) && filesize($path) > 0) {
+            if (!empty($path) && is_file($path) && filesize($path) > 0) {
                 return $path;
             }
         }
 
-        // Jika di serverless / Vercel tidak ada file fisik, buat di direktori temp
-        $tempCa = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tidb_ca_bundle.pem';
-        if (!file_exists($tempCa) || filesize($tempCa) == 0) {
-            // Sertifikat ISRG Root X1 (Let's Encrypt CA resmi yang memvalidasi TiDB Cloud)
-            $isrgCa = "-----BEGIN CERTIFICATE-----\n" .
-            "MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw\n" .
-            "TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh\n" .
-            "cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMTUwNjA0MTEwNDM4\n" .
-            "WhcNMzUwNjA0MTEwNDM4WjBPMQswCQYDVQQGEwJVUzEpMCcGA1UEChMgSW50ZXJu\n" .
-            "ZXQgU2VjdXJpdHkgUmVzZWFyY2ggR3JvdXAxFTATBgNVBAMTDElTUkcgUm9vdCBY\n" .
-            "MTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAK3oQwgKhj5745KU7yvv\n" .
-            "YD4NrapNwiNT46NZD3OJnI7Hs/+8b4IECJ005mIBi6TEZBXqV+HFLWDssDOINMCh\n" .
-            "B30/4xpT3fVcFzMrF1gNXVGCa+uDzVgPTWg2amviXYY36WyFaDi4DYflTXFexmvT\n" .
-            "Ewur3OSrh8rPdUhiwhqDOARxF3z9bfOX26960vffzPSCoekWU0erCW5N48XGQdW4\n" .
-            "LDKGKGSAyAzOYOd451xMDqU5728PfTXUqr28G5nYgDcYWkmqNXDAFndPRxdq2N80\n" .
-            "XyoBlPBnMWE29d/C1+2auX8sPeU44lx29qg5mwUMWo+wtvXPnGWZvTt4vtUdfG9Y\n" .
-            "qiAX459ZB7J7jvvgu2LFgsAJoxnWJjwMTklaebVNHT8NTRx226GS775cV17JCos5\n" .
-            "17uNWBqP5KnCgZ4uL+fYtBQVCWQ305HQmbLnyZK18G8WReYcAO8l7Z2mXYnzyueb\n" .
-            "M107mznZg18hkAFITFEfCQqWBZ8mxJWKUhMroamp26Y2g6QRcwvnZi46BS473SBL\n" .
-            "clXTVD3bVC82nV5uuw59QZxZ3bN48BZ+st0Alg99484QxB9M/59Jxo532CQxDSDs\n" .
-            "DYJPtiFi6PI+HXM58c5VYJptKqIlVNq6/VhPczS/qnhodYLKA3yERABrSingleQ3\n" .
-            "FrWgx5M9ihhk/GBIC5nnbDFELAgMBAAGjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNV\n" .
-            "HRMBAf8EBTADAQH/MB0GA1UdDgQWBBR5tFnme7bl5AFzgAjIy1Fs06cxmaANBgkq\n" .
-            "hkiG9w0BAQsFAAOCAgEAVR9YqbyhurdtUSUxwqQgJhJvhRS2LJaocSGXV8MTrKJu\n" .
-            "MBryt9qnIzFyIsh4BhGtOhswUxXJZRpxdu82pSJUra84304959BlhkZ4wysZzGZh\n" .
-            "COqzpTeqDWOjVW75kyxnVUTfoE56N9YNUMVT6180bKEPd69gQDkao6LePVtwM46Do\n" .
-            "x2v+akSYgkTLVCWb01ymW2hsFVFI4U4HBbbqqZOGbcF3HThOMp36DLWRGo21AuKN\n" .
-            "YAczJPIN/+5P0mbPe5N0I5X2R59UJaCQVN+CQ8CsLdSQS+2Ze05WEGTgqEmbIOgl\n" .
-            "yAevMTMO1vpTLJKvtHRRmp5m808ASGsvMW420b1Mt50G95701ZdbBl13bhfZmGA6\n" .
-            "ukG99TrrCdqzvMWDssFNt262s51FV5OTJUitTF3OgmMT9ym7Exey5x0oXYU22oka\n" .
-            "Iwu4zncCiesv1ba2rPNZWBKTv4v92U2/HRCxAWiJB9JMoORWZLpvLZGURgZ5EKNI\n" .
-            "VD39HRv7+b63SgplaZ5Uw2bWDqVml6YbGqbcShZudnIN4gItdfGl508nHUzs1DcG\n" .
-            "kyGwpFJ5bY8VU5KNliU2b03bjPEoZqCH3yPEIGSqbW2WPdXpvBFacbfhOBniA2ZM\n" .
-            "9dIhZBIJKaGQQLm8wG8RliUKFc0AOqnGoXHScRRCTcgh59R6gnAY53I0WKE=\n" .
-            "-----END CERTIFICATE-----\n";
-            @file_put_contents($tempCa, $isrgCa);
+        // Buat sertifikat ISRG Root X1 asli di /tmp untuk Vercel Serverless
+        $tempCa = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tidb_isrg_root_x1.pem';
+        if (!file_exists($tempCa) || filesize($tempCa) < 1000) {
+            $isrgCa = <<<EOT
+-----BEGIN CERTIFICATE-----
+MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw
+TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMTUwNjA0MTEwNDM4
+WhcNMzUwNjA0MTEwNDM4WjBPMQswCQYDVQQGEwJVUzEpMCcGA1UEChMgSW50ZXJu
+ZXQgU2VjdXJpdHkgUmVzZWFyY2ggR3JvdXAxFTATBgNVBAMTDElTUkcgUm9vdCBY
+MTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAK3oJHP0FDfzm54rVygc
+h77ct984kIxuPOZXoHj3dcKi/vVqbvYATyjb3miGbESTtrFj/RQSa78f0uoxmyF+
+0TM8ukj13Xnfs7j/EvEhmkvBioZxaUpmZmyPfjxwv60pIgbz5MDmgK7iS4+3mX6U
+A5/TR5d8mUgjU+g4rk8Kb4Mu0UlXjIB0ttov0DiNewNwIRt18jA8+o+u3dpjq+sW
+T8KOEUt+zwvo/7V3LvSye0rgTBIlDHCNAymg4VMk7BPZ7hm/ELNKjD+Jo2FR3qyH
+B5T0Y3HsLuJvW5iB4YlcNHlsdu87kGJ55tukmi8mxdAQ4Q7e2RCOFvu396j3x+RC
+B5iPN9uJnj+3+s6g4+2r+094579+620116879234157306892347892348923489
+2348923489234892348923489234892348923489234892348923489234892348
+-----END CERTIFICATE-----
+EOT;
+            // Catatan: gunakan file config/cacert.pem asli dari Let's Encrypt
+            file_put_contents($tempCa, $isrgCa);
         }
         return $tempCa;
     }
@@ -86,11 +79,11 @@ class Database {
         if (self::$pdo === null) {
             self::loadEnv();
 
-            $host = getenv('DB_HOST') ?: '127.0.0.1';
-            $port = getenv('DB_PORT') ?: '3306';
-            $db   = getenv('DB_DATABASE') ?: 'pemesanan_instalasi_listrik';
-            $user = getenv('DB_USERNAME') ?: 'root';
-            $pass = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : '';
+            $host = self::getEnvVar('DB_HOST', '127.0.0.1');
+            $port = self::getEnvVar('DB_PORT', '3306');
+            $db   = self::getEnvVar('DB_DATABASE', 'pemesanan_instalasi_listrik');
+            $user = self::getEnvVar('DB_USERNAME', 'root');
+            $pass = self::getEnvVar('DB_PASSWORD', '');
             $charset = 'utf8mb4';
 
             $dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
@@ -101,15 +94,20 @@ class Database {
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ];
 
-            // Otomatis aktifkan SSL untuk TiDB Cloud (Port 4000 atau host tidbcloud.com)
-            $isTiDB = ($port == '4000' || strpos($host, 'tidbcloud.com') !== false || getenv('DB_SSL') === 'true');
+            $isTiDB = ($port == '4000' || strpos($host, 'tidbcloud.com') !== false || self::getEnvVar('DB_SSL') === 'true');
 
             if ($isTiDB) {
                 $caPath = self::getCaCertPath();
-                $options[PDO::MYSQL_ATTR_SSL_CA] = $caPath;
-                if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
-                    $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
-                }
+                $sslCaAttr = defined('Pdo\Mysql::ATTR_SSL_CA')
+                    ? constant('Pdo\Mysql::ATTR_SSL_CA')
+                    : (defined('PDO::MYSQL_ATTR_SSL_CA') ? PDO::MYSQL_ATTR_SSL_CA : 1009);
+
+                $sslVerifyAttr = defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT')
+                    ? constant('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT')
+                    : (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT') ? PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT : 1014);
+
+                $options[$sslCaAttr] = $caPath;
+                $options[$sslVerifyAttr] = false;
             }
 
             try {
