@@ -19,6 +19,10 @@ if (!$pesanan) {
     exit;
 }
 
+// Generate QRIS string dinamis dengan nominal TERKUNCI PAS sesuai pesanan
+$qrisPayload = generate_qris_payload($pesanan['total_bayar']);
+$qrImageUrl = "https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=0&data=" . urlencode($qrisPayload);
+
 $pageTitle = 'Pembayaran GoPay QRIS - ' . $pesanan['id_pesanan'];
 require_once __DIR__ . '/../layouts/header.php';
 ?>
@@ -82,19 +86,59 @@ require_once __DIR__ . '/../layouts/header.php';
 
                 <?php else: ?>
 
-                    <!-- TAMPILAN KARTU STANDAR QRIS NASIONAL (PERSIS SEPERTI GAMBAR) -->
-                    <div class="position-relative mx-auto my-2 p-2 bg-white rounded-4 shadow border" style="max-width: 380px;">
+                    <!-- TAMPILAN KARTU STANDAR QRIS NASIONAL (DENGAN NOMINAL TERKUNCI PAS) -->
+                    <div class="position-relative mx-auto my-3 p-3 bg-white rounded-4 shadow border" style="max-width: 360px; border: 2px solid #e2e8f0;">
                         
-                        <!-- Gambar Standar QRIS GPN Uji Coba Instalasi Listrik -->
-                        <div class="p-2 text-center">
-                            <img src="assets/qris_midtrans_standar.png" alt="QRIS Standar Pembayaran Nasional GPN - Uji Coba Instalasi Listrik" class="img-fluid rounded-3" style="width: 100%; max-width: 340px; display: block; margin: 0 auto;">
+                        <!-- Header Logo QRIS & GPN -->
+                        <div class="d-flex justify-content-between align-items-center mb-2 px-2">
+                            <!-- Logo QRIS -->
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.5px; font-family: Arial, sans-serif;">Q<span class="text-danger">R</span>IS</span>
+                                <div class="ms-1 text-start" style="line-height: 1.05;">
+                                    <div style="font-size: 0.52rem; font-weight: 700; color: #1e293b;">QR Code Standar</div>
+                                    <div style="font-size: 0.52rem; font-weight: 700; color: #1e293b;">Pembayaran Nasional</div>
+                                </div>
+                            </div>
+                            <!-- Logo GPN -->
+                            <div class="d-flex align-items-center gap-1">
+                                <i class="bi bi-shield-fill-check text-danger fs-5"></i>
+                                <span class="fw-bold small text-danger" style="letter-spacing: 0.5px;">GPN</span>
+                            </div>
+                        </div>
+
+                        <!-- Merchant Name -->
+                        <div class="text-center my-2">
+                            <h6 class="fw-bold text-dark mb-0" style="font-size: 1rem;">uji coba instalasi listri</h6>
+                            <small class="text-muted" style="font-size: 0.75rem;">NMID: ID1020021653030 &bull; GO-JEK / PT. EKSAVINDO</small>
+                        </div>
+
+                        <!-- QRIS Barcode Container (Dinamis: Nominal Terkunci Otomatis Sesuai Pesanan) -->
+                        <div class="position-relative p-2 my-2 bg-white d-flex justify-content-center align-items-center">
+                            <!-- Panah Merah Sisi Kiri Sesuai Desain Resmi QRIS -->
+                            <div class="position-absolute start-0 top-50 translate-middle-y" style="width: 14px; height: 130px; background: #dc2626; clip-path: polygon(0% 15%, 50% 0%, 100% 15%, 100% 100%, 0% 100%);"></div>
+
+                            <!-- Gambar QR Code Dinamis Terkunci -->
+                            <div id="qrisContainer" class="p-2 border rounded-3 bg-white" style="box-shadow: 0 2px 10px rgba(0,0,0,0.06);">
+                                <img id="qrisImg" src="<?= $qrImageUrl ?>" alt="QRIS Nominal Pas: <?= rupiah($pesanan['total_bayar']) ?>" class="img-fluid rounded" style="width: 240px; height: 240px; display: block;" onerror="fallbackQrCanvas()">
+                                <div id="qrisCanvas" style="display: none;"></div>
+                            </div>
+
+                            <!-- Sudut Merah Kanan Bawah Sesuai Desain Resmi QRIS -->
+                            <div class="position-absolute end-0 bottom-0" style="width: 28px; height: 28px; background: #dc2626; clip-path: polygon(100% 0, 100% 100%, 0 100%);"></div>
+                        </div>
+
+                        <!-- Footer Note Sesuai Gambar -->
+                        <div class="text-center mt-2 pt-1 border-top">
+                            <span class="text-muted fw-semibold" style="font-size: 0.78rem;">
+                                Dicetak oleh: <strong>GoPay</strong> &bull; Nominal Scan Terkunci: <strong class="text-danger"><?= rupiah($pesanan['total_bayar']) ?></strong>
+                            </span>
                         </div>
 
                     </div>
 
                     <!-- Keterangan Scan Otomatis -->
                     <div class="alert alert-primary bg-primary bg-opacity-10 border-0 text-primary py-2 px-3 small my-3 rounded-3 text-start">
-                        <i class="bi bi-shield-lock-fill me-1"></i> <strong>Sistem Scan Otomatis Aktif:</strong> Konsumen cukup buka aplikasi e-wallet (GoPay, BCA, OVO, Dana, ShopeePay, Livin Mandiri) lalu scan QRIS di atas.
+                        <i class="bi bi-shield-lock-fill me-1"></i> <strong>Sistem Scan Otomatis Aktif:</strong> Buka aplikasi e-wallet (DANA, GoPay, BCA Mobile, OVO, ShopeePay, Livin Mandiri) lalu scan QRIS di atas. Nominal pembayaran akan langsung terkunci pas senilai <strong><?= rupiah($pesanan['total_bayar']) ?></strong> tanpa perlu mengetik manual.
                     </div>
 
                     <!-- Tombol Konfirmasi Selesai Bayar -->
@@ -114,6 +158,28 @@ require_once __DIR__ . '/../layouts/header.php';
 
             </div>
         </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+function fallbackQrCanvas() {
+    const img = document.getElementById('qrisImg');
+    const canvasContainer = document.getElementById('qrisCanvas');
+    if (img && canvasContainer && typeof QRCode !== 'undefined') {
+        img.style.display = 'none';
+        canvasContainer.style.display = 'block';
+        new QRCode(canvasContainer, {
+            text: <?= json_encode($qrisPayload) ?>,
+            width: 240,
+            height: 240,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+}
+</script>
     </div>
 </div>
 
