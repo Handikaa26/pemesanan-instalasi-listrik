@@ -43,13 +43,36 @@ class Database {
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ];
 
-            // Konfigurasi SSL untuk TiDB Cloud (Port 4000)
-            if ($port == '4000' || getenv('DB_SSL') === 'true') {
-                $sslCa = getenv('MYSQL_ATTR_SSL_CA');
-                if (!empty($sslCa) && file_exists($sslCa)) {
-                    $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCa;
+            // Konfigurasi SSL untuk TiDB Cloud (Port 4000, host tidbcloud.com, atau DB_SSL=true)
+            $isTiDB = ($port == '4000' || strpos($host, 'tidbcloud.com') !== false || getenv('DB_SSL') === 'true');
+
+            if ($isTiDB) {
+                $caCandidates = [
+                    getenv('MYSQL_ATTR_SSL_CA'),
+                    __DIR__ . '/cacert.pem',
+                    __DIR__ . '/../cacert.pem',
+                    dirname(__DIR__) . '/cacert.pem',
+                    '/etc/ssl/certs/ca-certificates.crt', // Vercel / Debian / Ubuntu
+                    '/etc/pki/tls/certs/ca-bundle.crt',   // Amazon Linux 2 / CentOS
+                    '/etc/ssl/cert.pem'
+                ];
+
+                $caFile = null;
+                foreach ($caCandidates as $candidate) {
+                    if (!empty($candidate) && file_exists($candidate)) {
+                        $caFile = $candidate;
+                        break;
+                    }
                 }
-                // Izinkan SSL handshake untuk TiDB Cloud Serverless
+
+                if ($caFile) {
+                    $options[PDO::MYSQL_ATTR_SSL_CA] = $caFile;
+                } else {
+                    // Fallback ke bundled cacert.pem
+                    $options[PDO::MYSQL_ATTR_SSL_CA] = __DIR__ . '/cacert.pem';
+                }
+
+                // Jangan verifikasi nama hostname jika sertifikat self-signed / cloud gateway
                 if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
                     $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
                 }
