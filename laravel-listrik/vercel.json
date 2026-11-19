@@ -3,7 +3,8 @@
   "framework": null,
   "functions": {
     "api/index.php": {
-      "runtime": "vercel-php@0.7.3"
+      "runtime": "vercel-php@0.7.3",
+      "includeFiles": "{config,views,controllers,assets,uploads,public}/**"
     }
   },
   "routes": [
@@ -24,7 +25,6 @@
     "APP_ENV": "production",
     "APP_DEBUG": "false",
     "DB_SSL": "true",
-    "MYSQL_ATTR_SSL_CA": "/etc/ssl/certs/ca-certificates.crt",
     "APP_CONFIG_CACHE": "/tmp/config.php",
     "APP_EVENTS_CACHE": "/tmp/events.php",
     "APP_PACKAGES_CACHE": "/tmp/packages.php",
